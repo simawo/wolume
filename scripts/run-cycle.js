@@ -5,13 +5,6 @@ import { parse } from "node-html-parser";
 
 const DEBUG_DIR = "debug";
 
-if (!isRunnerEnabled()) {
-  console.log(
-    "Wolume runner is disabled. Set WOLUME_RUNNER_ENABLED=1 only when intentionally activating the standby system."
-  );
-  process.exit(0);
-}
-
 const WOLUME_ENDPOINT = normalizeBaseEndpoint(process.env.WOLUME_ENDPOINT || "");
 const RUNNER_TOKEN = process.env.RUNNER_TOKEN || "";
 const ACTION_LABEL = mustEnv("ACTION_LABEL");
@@ -976,10 +969,6 @@ function parseOptionalIntegerEnv(name, { min = 0, max = 10_000 } = {}) {
 
 function parseIntegerEnv(name, defaultValue, { min = 0, max = 10_000 } = {}) {
   return parseOptionalIntegerEnv(name, { min, max }) ?? defaultValue;
-}
-
-function isRunnerEnabled() {
-  return String(process.env.WOLUME_RUNNER_ENABLED || "").trim() === "1";
 }
 
 async function loadRunnerTargets() {
