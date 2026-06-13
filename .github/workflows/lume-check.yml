@@ -27,14 +27,21 @@ jobs:
     steps:
       - uses: actions/checkout@v6
 
+      - name: Standby guard
+        if: vars.WOLUME_RUNNER_ENABLED != '1'
+        run: echo "Wolume runner is disabled. Set repository variable WOLUME_RUNNER_ENABLED=1 to activate the standby system."
+
       - name: Install dependencies
+        if: vars.WOLUME_RUNNER_ENABLED == '1'
         run: npm ci --omit=dev --no-audit --no-fund
         env:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
 
       - name: Run check
+        if: vars.WOLUME_RUNNER_ENABLED == '1'
         run: npm run run
         env:
+          WOLUME_RUNNER_ENABLED: ${{ vars.WOLUME_RUNNER_ENABLED }}
           CHECK_ONLY: "1"
           WOLUME_ENDPOINT: ${{ secrets.WOLUME_ENDPOINT }}
           RUNNER_TOKEN: ${{ secrets.RUNNER_TOKEN }}
@@ -51,7 +58,7 @@ jobs:
           WRITE_DEBUG: ${{ inputs.upload_debug && '1' || '0' }}
 
       - name: Upload debug files
-        if: always() && inputs.upload_debug == true
+        if: always() && inputs.upload_debug == true && vars.WOLUME_RUNNER_ENABLED == '1'
         uses: actions/upload-artifact@v7
         with:
           name: wolume-diagnostics

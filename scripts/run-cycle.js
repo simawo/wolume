@@ -5,6 +5,13 @@ import { parse } from "node-html-parser";
 
 const DEBUG_DIR = "debug";
 
+if (!isRunnerEnabled()) {
+  console.log(
+    "Wolume runner is disabled. Set WOLUME_RUNNER_ENABLED=1 only when intentionally activating the standby system."
+  );
+  process.exit(0);
+}
+
 const WOLUME_ENDPOINT = normalizeBaseEndpoint(process.env.WOLUME_ENDPOINT || "");
 const RUNNER_TOKEN = process.env.RUNNER_TOKEN || "";
 const ACTION_LABEL = mustEnv("ACTION_LABEL");
@@ -971,6 +978,10 @@ function parseIntegerEnv(name, defaultValue, { min = 0, max = 10_000 } = {}) {
   return parseOptionalIntegerEnv(name, { min, max }) ?? defaultValue;
 }
 
+function isRunnerEnabled() {
+  return String(process.env.WOLUME_RUNNER_ENABLED || "").trim() === "1";
+}
+
 async function loadRunnerTargets() {
   if (!WOLUME_ENDPOINT) {
     throw new Error("missing env: WOLUME_ENDPOINT");
@@ -993,15 +1004,19 @@ async function loadRunnerTargets() {
   });
   const body = await res.text();
 
-  if (!res.ok) {
-    throw new Error(`runner targets error ${res.status}; check Worker logs for details.`);
-  }
-
   let parsed;
   try {
-    parsed = JSON.parse(body);
+    parsed = body.trim() ? JSON.parse(body) : {};
   } catch (error) {
     throw new Error(`runner targets response is not valid JSON: ${error.message}`);
+  }
+
+  if (!res.ok) {
+    if (res.status === 409 && parsed?.standby) {
+      console.log("Wolume Worker is in standby mode; no runner work will be performed.");
+      return [];
+    }
+    throw new Error(`runner targets error ${res.status}; check Worker logs for details.`);
   }
 
   const entries = parsed.targets || [];
