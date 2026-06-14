@@ -1001,10 +1001,6 @@ async function loadRunnerTargets() {
   }
 
   if (!res.ok) {
-    if (res.status === 409 && parsed?.standby) {
-      console.log("Wolume Worker is in standby mode; no runner work will be performed.");
-      return [];
-    }
     throw new Error(`runner targets error ${res.status}; check Worker logs for details.`);
   }
 

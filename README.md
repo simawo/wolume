@@ -1,25 +1,24 @@
 # wolume
 
-Wolume is the standby runner for the older Cloudflare Worker + D1 based
+Wolume is the reserve runner for the older Cloudflare Worker + D1 based
 notification system. Woracle is the primary system now; Wolume is kept so it can
 be reactivated if Woracle has a production incident.
 
-## Standby mode
+## Reserve scheduling
 
 Wolume is not scheduled while Woracle is primary.
 
-- Remove the Cloudflare Cron Trigger while Wolume is only a standby. This stops
+- Remove the Cloudflare Cron Trigger while Wolume is only a reserve. This stops
   the scheduled Worker invocation itself.
 - The Worker code lives in `C:\Development\woppo-tools\wolume-manual` and should
-  keep `WOLUME_STANDBY_MODE=1` while Woracle is primary. This prevents manual
-  dispatch, runner access, and D1 work inside the Worker.
+  stay deployable without an extra runtime flag. Cron Trigger presence is the
+  switch for scheduled production work.
 
 ## Reactivating Wolume
 
-Use this only as an intentional fallback.
+Use this only as an intentional reserve path.
 
-1. In the Cloudflare Worker, set `WOLUME_STANDBY_MODE=0`.
-2. Confirm Worker `/health` reports `standby: false`.
-3. Manually run `lume-check` for one guild before enabling any scheduled or
+1. Confirm Worker `/health` is reachable.
+2. Manually run `lume-check` for one guild before enabling any scheduled or
    manual production dispatch.
-4. Add the Cloudflare Cron Trigger only after the manual check succeeds.
+3. Add the Cloudflare Cron Trigger only after the manual check succeeds.
