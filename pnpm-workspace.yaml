@@ -1,0 +1,19 @@
+packages:
+  - .
+  - '!dist/**'
+
+minimumReleaseAge: 1440
+minimumReleaseAgeStrict: true
+minimumReleaseAgeIgnoreMissingTime: false
+saveExact: true
+resolutionMode: time-based
+blockExoticSubdeps: true
+trustPolicy: no-downgrade
+trustPolicyIgnoreAfter: 4320
+pmOnFail: error
+engineStrict: true
+verifyStoreIntegrity: true
+strictStorePkgContentCheck: true
+strictSsl: true
+strictDepBuilds: true
+verifyDepsBeforeRun: error

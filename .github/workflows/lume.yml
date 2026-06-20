@@ -21,18 +21,23 @@ jobs:
     timeout-minutes: 10
 
     container:
-      image: mcr.microsoft.com/playwright:v1.60.0-noble
+      image: mcr.microsoft.com/playwright:v1.61.0-noble
 
     steps:
       - uses: actions/checkout@v6
 
+      - name: Enable pnpm
+        run: |
+          corepack enable
+          corepack prepare pnpm@11.8.0 --activate
+
       - name: Install dependencies
-        run: npm ci --omit=dev --no-audit --no-fund
+        run: pnpm install --prod --frozen-lockfile
         env:
           PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD: "1"
 
       - name: Run cycle
-        run: npm run run
+        run: pnpm run run
         env:
           WOLUME_ENDPOINT: ${{ secrets.WOLUME_ENDPOINT }}
           RUNNER_TOKEN: ${{ secrets.RUNNER_TOKEN }}

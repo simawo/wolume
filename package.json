@@ -3,12 +3,16 @@
   "version": "1.0.0",
   "private": true,
   "type": "module",
+  "packageManager": "pnpm@11.8.0",
+  "engines": {
+    "node": ">=24.17.0 <25.0.0"
+  },
   "scripts": {
     "run": "node scripts/run-cycle.js",
     "create-storage-state": "node scripts/create-storage-state.js"
   },
   "dependencies": {
-    "node-html-parser": "^7.0.1",
-    "playwright": "1.60.0"
+    "node-html-parser": "7.1.0",
+    "playwright": "1.61.0"
   }
 }
